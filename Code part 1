@@ -1,0 +1,197 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Sat Dec  3 19:29:10 2022
+
+@author: Kaan Gursoy
+"""
+import numpy as np
+import glob
+import seaborn as sb
+import matplotlib.pyplot as plt
+import PIL 
+import matplotlib.image as image
+from PIL import Image
+x=2
+k=2
+image_list=[]
+
+#CONVERTING 512X512 TO 64X64
+for i in range(5239):
+    if x<10:
+        image = Image.open('flickr_dog_00000'+str(x)+'.jpg')
+        new_image = image.resize((64, 64))
+        new_image.save('flickr_dog_00000'+str(x)+'.jpg')
+    elif x >=10 and x<100:
+        image = Image.open('flickr_dog_0000'+str(x)+'.jpg')
+        new_image = image.resize((64, 64))
+        new_image.save('flickr_dog_0000'+str(x)+'.jpg')
+    elif x >=100 and x<1000:
+        image = Image.open('flickr_dog_000'+str(x)+'.jpg')
+        new_image = image.resize((64, 64))
+        new_image.save('flickr_dog_000'+str(x)+'.jpg')
+    elif x >=1000 and x<=1183:
+        image = Image.open('flickr_dog_00'+str(x)+'.jpg')
+        new_image = image.resize((64, 64))
+        new_image.save('flickr_dog_00'+str(x)+'.jpg')
+
+    elif x>=1184:
+        if k<10:
+            image = Image.open('pixabay_dog_00000'+str(k)+'.jpg')
+            new_image = image.resize((64, 64))
+            new_image.save('pixabay_dog_00000'+str(k)+'.jpg')
+            
+        elif k >=10 and k<100:
+            image = Image.open('pixabay_dog_0000'+str(k)+'.jpg')
+            new_image = image.resize((64, 64))
+            new_image.save('pixabay_dog_0000'+str(k)+'.jpg')
+        elif k >=100 and k<1000:
+            image = Image.open('pixabay_dog_000'+str(k)+'.jpg')
+            new_image = image.resize((64, 64))
+            new_image.save('pixabay_dog_000'+str(k)+'.jpg')
+        elif k >=1000 and k<4059:
+            image = Image.open('pixabay_dog_00'+str(k)+'.jpg')
+            new_image = image.resize((64, 64))
+            new_image.save('pixabay_dog_00'+str(k)+'.jpg')
+        k+=1
+    x+=1
+    dog_data = list(new_image.getdata())
+    image_list.append(dog_data)
+
+imarray = np.array(image_list)
+red = imarray[:,:,0]
+green = imarray[:,:,1]
+blue = imarray[:,:,2]
+
+    
+def PCA(X , number):
+     
+    u = np.mean(X, axis = 0)
+
+    u_matrix = X - np.mean(X , axis = 0)
+     
+    covariance = np.cov(u_matrix , rowvar = False)
+     
+    eigenvalues , eigenvectors = np.linalg.eigh(covariance)
+     
+    a = np.argsort(eigenvalues)[::-1]
+    b = eigenvalues[a]
+    c = eigenvectors[:,a]
+     
+    d = c[:,0:number]
+    e = np.dot(d.transpose() , u_matrix.transpose() ).transpose()
+
+
+    f = [i/np.sum(eigenvalues) for i in b[:number]]
+     
+    return e, f, d, u   
+
+
+
+eig_vectors_Red_10PCA = PCA(red,10)[2]
+eig_vectors_Red_10PCA = eig_vectors_Red_10PCA.transpose()
+eig_vectors_Red_10PCA_reshaped = np.reshape(eig_vectors_Red_10PCA, (10,64,64))
+
+
+
+eig_vectors_Green_10PCA = PCA(green,10)[2]
+eig_vectors_Green_10PCA = eig_vectors_Green_10PCA.transpose()
+eig_vectors_Green_10PCA_reshaped = np.reshape(eig_vectors_Green_10PCA, (10,64,64))
+
+
+
+eig_vectors_Blue_10PCA = PCA(blue,10)[2]
+eig_vectors_Blue_10PCA = eig_vectors_Blue_10PCA.transpose()
+eig_vectors_Blue_10PCA_reshaped = np.reshape(eig_vectors_Blue_10PCA, (10,64,64))
+
+
+
+# Question 1.2
+def normalize_pcs(pcs):
+    pcs = pcs + np.abs(pcs.min())
+    for i in pcs:
+        i = (i - i.min()) / (i.max() - i.min())
+    return pcs * 2550
+
+eig_vectors_Red_10PCA = normalize_pcs(eig_vectors_Red_10PCA)
+eig_vectors_Red_10PCA_reshaped = np.reshape(eig_vectors_Red_10PCA, (10,64,64))
+eig_vectors_Red_10PCA_reshaped =eig_vectors_Red_10PCA_reshaped.astype('int32')
+Red_PCA_INDEX_0 = eig_vectors_Red_10PCA_reshaped[0,:,:]
+Red_PCA_INDEX_1 = eig_vectors_Red_10PCA_reshaped[1,:,:]
+Red_PCA_INDEX_2 = eig_vectors_Red_10PCA_reshaped[2,:,:]
+Red_PCA_INDEX_3 = eig_vectors_Red_10PCA_reshaped[3,:,:]
+Red_PCA_INDEX_4 = eig_vectors_Red_10PCA_reshaped[4,:,:]
+Red_PCA_INDEX_5 = eig_vectors_Red_10PCA_reshaped[5,:,:]
+Red_PCA_INDEX_6 = eig_vectors_Red_10PCA_reshaped[6,:,:]
+Red_PCA_INDEX_7 = eig_vectors_Red_10PCA_reshaped[7,:,:]
+Red_PCA_INDEX_8 = eig_vectors_Red_10PCA_reshaped[8,:,:]
+Red_PCA_INDEX_9 = eig_vectors_Red_10PCA_reshaped[9,:,:]
+
+
+eig_vectors_Green_10PCA = normalize_pcs(eig_vectors_Green_10PCA)
+eig_vectors_Green_10PCA_reshaped = np.reshape(eig_vectors_Green_10PCA, (10,64,64))
+eig_vectors_Green_10PCA_reshaped =eig_vectors_Green_10PCA_reshaped.astype('int32')
+Green_PCA_INDEX_0 = eig_vectors_Green_10PCA_reshaped[0,:,:]
+Green_PCA_INDEX_1 = eig_vectors_Green_10PCA_reshaped[1,:,:]
+Green_PCA_INDEX_2 = eig_vectors_Green_10PCA_reshaped[2,:,:]
+Green_PCA_INDEX_3 = eig_vectors_Green_10PCA_reshaped[3,:,:]
+Green_PCA_INDEX_4 = eig_vectors_Green_10PCA_reshaped[4,:,:]
+Green_PCA_INDEX_5 = eig_vectors_Green_10PCA_reshaped[5,:,:]
+Green_PCA_INDEX_6 = eig_vectors_Green_10PCA_reshaped[6,:,:]
+Green_PCA_INDEX_7 = eig_vectors_Green_10PCA_reshaped[7,:,:]
+Green_PCA_INDEX_8 = eig_vectors_Green_10PCA_reshaped[8,:,:]
+Green_PCA_INDEX_9 = eig_vectors_Green_10PCA_reshaped[9,:,:]
+
+eig_vectors_Blue_10PCA = normalize_pcs(eig_vectors_Blue_10PCA)
+eig_vectors_Blue_10PCA_reshaped = np.reshape(eig_vectors_Blue_10PCA, (10,64,64))
+eig_vectors_Blue_10PCA_reshaped =eig_vectors_Blue_10PCA_reshaped.astype('int32')
+Blue_PCA_INDEX_0 = eig_vectors_Blue_10PCA_reshaped[0,:,:]
+Blue_PCA_INDEX_1 = eig_vectors_Blue_10PCA_reshaped[1,:,:]
+Blue_PCA_INDEX_2 = eig_vectors_Blue_10PCA_reshaped[2,:,:]
+Blue_PCA_INDEX_3 = eig_vectors_Blue_10PCA_reshaped[3,:,:]
+Blue_PCA_INDEX_4 = eig_vectors_Blue_10PCA_reshaped[4,:,:]
+Blue_PCA_INDEX_5 = eig_vectors_Blue_10PCA_reshaped[5,:,:]
+Blue_PCA_INDEX_6 = eig_vectors_Blue_10PCA_reshaped[6,:,:]
+Blue_PCA_INDEX_7 = eig_vectors_Blue_10PCA_reshaped[7,:,:]
+Blue_PCA_INDEX_8 = eig_vectors_Blue_10PCA_reshaped[8,:,:]
+Blue_PCA_INDEX_9 = eig_vectors_Blue_10PCA_reshaped[9,:,:]
+
+PCA1_q2 = np.dstack((Red_PCA_INDEX_0, Green_PCA_INDEX_0, Blue_PCA_INDEX_0))
+PCA2_q2 = np.dstack((Red_PCA_INDEX_1, Green_PCA_INDEX_1, Blue_PCA_INDEX_1))
+PCA3_q2 = np.dstack((Red_PCA_INDEX_2, Green_PCA_INDEX_2, Blue_PCA_INDEX_2))
+PCA4_q2 = np.dstack((Red_PCA_INDEX_3, Green_PCA_INDEX_3, Blue_PCA_INDEX_3))
+PCA5_q2 = np.dstack((Red_PCA_INDEX_4, Green_PCA_INDEX_4, Blue_PCA_INDEX_4))
+PCA6_q2 = np.dstack((Red_PCA_INDEX_5, Green_PCA_INDEX_5, Blue_PCA_INDEX_5))
+PCA7_q2 = np.dstack((Red_PCA_INDEX_6, Green_PCA_INDEX_6, Blue_PCA_INDEX_6))
+PCA8_q2 = np.dstack((Red_PCA_INDEX_7, Green_PCA_INDEX_7, Blue_PCA_INDEX_7))
+PCA9_q2 = np.dstack((Red_PCA_INDEX_8, Green_PCA_INDEX_8, Blue_PCA_INDEX_8))
+PCA10_q2 = np.dstack((Red_PCA_INDEX_9, Green_PCA_INDEX_9, Blue_PCA_INDEX_9))
+
+plt.imshow(PCA1_q2)
+plt.show()
+
+plt.imshow(PCA2_q2)
+plt.show()
+
+plt.imshow(PCA3_q2)
+plt.show()
+
+plt.imshow(PCA4_q2)
+plt.show()
+
+plt.imshow(PCA5_q2)
+plt.show()
+
+plt.imshow(PCA6_q2)
+plt.show()
+
+plt.imshow(PCA7_q2)
+plt.show()
+
+plt.imshow(PCA8_q2)
+plt.show()
+
+plt.imshow(PCA9_q2)
+plt.show()
+
+plt.imshow(PCA10_q2)
+plt.show()
