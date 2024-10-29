@@ -1,0 +1,160 @@
+"""
+Created on Sat Dec  3 19:29:10 2022
+
+@author: Kaan Gursoy
+"""
+import numpy as np
+import glob
+import seaborn as sb
+import matplotlib.pyplot as plt
+import PIL 
+import matplotlib.image as image
+from PIL import Image
+x=2
+k=2
+image_list=[]
+#CONVERTING 512X512 TO 64X64
+for i in range(5239):
+    if x<10:
+        image = Image.open('flickr_dog_00000'+str(x)+'.jpg')
+        new_image = image.resize((64, 64))
+        new_image.save('flickr_dog_00000'+str(x)+'.jpg')
+    elif x >=10 and x<100:
+        image = Image.open('flickr_dog_0000'+str(x)+'.jpg')
+        new_image = image.resize((64, 64))
+        new_image.save('flickr_dog_0000'+str(x)+'.jpg')
+    elif x >=100 and x<1000:
+        image = Image.open('flickr_dog_000'+str(x)+'.jpg')
+        new_image = image.resize((64, 64))
+        new_image.save('flickr_dog_000'+str(x)+'.jpg')
+    elif x >=1000 and x<=1183:
+        image = Image.open('flickr_dog_00'+str(x)+'.jpg')
+        new_image = image.resize((64, 64))
+        new_image.save('flickr_dog_00'+str(x)+'.jpg')
+
+    elif x>=1184:
+        if k<10:
+            image = Image.open('pixabay_dog_00000'+str(k)+'.jpg')
+            new_image = image.resize((64, 64))
+            new_image.save('pixabay_dog_00000'+str(k)+'.jpg')
+            
+        elif k >=10 and k<100:
+            image = Image.open('pixabay_dog_0000'+str(k)+'.jpg')
+            new_image = image.resize((64, 64))
+            new_image.save('pixabay_dog_0000'+str(k)+'.jpg')
+        elif k >=100 and k<1000:
+            image = Image.open('pixabay_dog_000'+str(k)+'.jpg')
+            new_image = image.resize((64, 64))
+            new_image.save('pixabay_dog_000'+str(k)+'.jpg')
+        elif k >=1000 and k<4059:
+            image = Image.open('pixabay_dog_00'+str(k)+'.jpg')
+            new_image = image.resize((64, 64))
+            new_image.save('pixabay_dog_00'+str(k)+'.jpg')
+        k+=1
+    x+=1
+    dog_data = list(new_image.getdata())
+    image_list.append(dog_data)
+numpy_image_array = np.array(image_list)
+red = numpy_image_array[:,:,0]
+green = numpy_image_array[:,:,1]
+blue = numpy_image_array[:,:,2]
+
+
+def PCA(X , numbers):
+    u = np.mean(X, axis = 0)
+    u_matrix = X - np.mean(X , axis = 0)
+    covariance = np.cov(u_matrix , rowvar = False)
+    eigenvalues , eigenvectors = np.linalg.eigh(covariance)
+    vector_set = eigenvectors[:,np.argsort(eigenvalues)[::-1]][:,0:numbers]
+    result_pve = [i/np.sum(eigenvalues) for i in eigenvalues[np.argsort(eigenvalues)[::-1]][:numbers]]
+    return np.dot(vector_set.transpose() , u_matrix.transpose() ).transpose(), result_pve, vector_set, u
+
+
+PCA(blue,10)[2] = PCA(blue,10)[2].transpose()
+PCA(green,10)[2] = PCA(green,10)[2].transpose()
+PCA(red,10)[2] = PCA(red,10)[2].transpose()
+
+
+new_red = np.reshape(PCA(red,10)[2], (10,64,64))
+new_green = np.reshape(PCA(green,10)[2], (10,64,64))
+new_blue = np.reshape(PCA(blue,10)[2], (10,64,64))
+
+def normalize_x(x):
+    x = x + np.abs(x.min())
+    for i in x:
+        i = (i - i.min()) / (i.max() - i.min())
+    return x * 2550
+
+PCA(red,10)[2] = normalize_x(PCA(red,10)[2])
+new_red = np.reshape(PCA(red,10)[2], (10,64,64))
+new_red =new_red.astype('int32')
+
+PCA(green,10)[2] = normalize_x(PCA(green,10)[2])
+new_green = np.reshape(PCA(green,10)[2], (10,64,64))
+new_green =new_green.astype('int32')
+
+PCA(blue,10)[2] = normalize_x(PCA(blue,10)[2])
+new_blue = np.reshape(PCA(blue,10)[2], (10,64,64))
+new_blue =new_blue.astype('int32')
+
+red0 = new_red[0,:,:]
+red1 = new_red[1,:,:]
+red2 = new_red[2,:,:]
+red3 = new_red[3,:,:]
+red4 = new_red[4,:,:]
+red5 = new_red[5,:,:]
+red6 = new_red[6,:,:]
+red7 = new_red[7,:,:]
+red8 = new_red[8,:,:]
+red9 = new_red[9,:,:]
+green0 = new_green[0,:,:]
+green1 = new_green[1,:,:]
+green2 = new_green[2,:,:]
+green3 = new_green[3,:,:]
+green4 = new_green[4,:,:]
+green5 = new_green[5,:,:]
+green6 = new_green[6,:,:]
+green7 = new_green[7,:,:]
+green8 = new_green[8,:,:]
+green9 = new_green[9,:,:]
+blue0 = new_blue[0,:,:]
+blue1 = new_blue[1,:,:]
+blue2 = new_blue[2,:,:]
+blue3 = new_blue[3,:,:]
+blue4 = new_blue[4,:,:]
+blue5 = new_blue[5,:,:]
+blue6 = new_blue[6,:,:]
+blue7 = new_blue[7,:,:]
+blue8 = new_blue[8,:,:]
+blue0 = new_blue[9,:,:]
+
+
+plt.imshow(np.dstack((red0, green0, blue0)))
+plt.show()
+
+plt.imshow(np.dstack((red1, green1, blue1)))
+plt.show()
+
+plt.imshow(np.dstack((red2, green2, blue2)))
+plt.show()
+
+plt.imshow(np.dstack((red3, green3, blue3)))
+plt.show()
+
+plt.imshow(np.dstack((red4, green4, blue4)))
+plt.show()
+
+plt.imshow(np.dstack((red5, green5, blue5)))
+plt.show()
+
+plt.imshow(np.dstack((red6, green6, blue6)))
+plt.show()
+
+plt.imshow(np.dstack((red7, green7, blue7)))
+plt.show()
+
+plt.imshow(np.dstack((red8, green8, blue8)))
+plt.show()
+
+plt.imshow(np.dstack((red9, green9, blue0)))
+plt.show()
